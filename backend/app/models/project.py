@@ -10,8 +10,11 @@ class Project(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
 
-    guests = relationship("GuestProfile", back_populates="project", cascade="all, delete-orphan")
+    participants = relationship(
+        "ParticipantProfile",
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )
     simulations = relationship(
         "SimulationRun", back_populates="project", cascade="all, delete-orphan"
     )
-

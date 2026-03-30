@@ -3,10 +3,16 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 from app.schemas.director import DirectorSceneResult
+from app.schemas.project import ParticipantEditablePersonality
 
 
 class SimulationCreateRequest(BaseModel):
     strategy_cards: list[str] = Field(default_factory=list)
+    selected_participant_ids: list[str] = Field(default_factory=list)
+    participant_personality_overrides: dict[str, ParticipantEditablePersonality] = Field(
+        default_factory=dict
+    )
+    scene_pack_config: dict | None = None
 
 
 class SceneRunSummary(BaseModel):
@@ -21,8 +27,10 @@ class SceneRunSummary(BaseModel):
 
 
 class RelationshipStateView(BaseModel):
-    guest_id: str
-    guest_name: str
+    source_participant_id: str
+    source_name: str
+    target_participant_id: str
+    target_name: str
     status: str
     recent_trend: str
     metrics: dict

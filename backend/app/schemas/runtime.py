@@ -5,37 +5,44 @@ from pydantic import BaseModel, Field, field_validator
 from app.schemas.director import ALLOWED_METRICS
 
 
-class DirectorPlanParticipant(BaseModel):
-    guest_id: str
+class PlanParticipant(BaseModel):
+    participant_id: str
     name: str
-    role: str
+    cast_role: str
 
 
-class DirectorPlanDirective(BaseModel):
-    guest_id: str
+class ParticipantDirective(BaseModel):
+    participant_id: str
     directive: str
 
 
-class DirectorPlan(BaseModel):
+class SceneOrchestratorPlan(BaseModel):
     scene_id: str
     scene_goal: str
     scene_frame: str
-    participants: list[DirectorPlanParticipant]
-    turn_order: list[str]
-    agent_directives: list[DirectorPlanDirective] = Field(default_factory=list)
-    evaluation_focus: list[str] = Field(default_factory=list)
-    stop_condition: str
+    participants: list[PlanParticipant]
+    min_turns: int
+    max_turns: int
+    planned_rounds: int
     active_tension: str
+    stop_condition: str
+    scheduler_notes: list[str] = Field(default_factory=list)
+    phase_outline: list[str] = Field(default_factory=list)
+    participant_directives: list[ParticipantDirective] = Field(default_factory=list)
 
 
 class AgentTurnPayload(BaseModel):
-    speaker_guest_id: str
+    speaker_participant_id: str
     speaker_name: str
     turn_index: int
+    round_index: int
     utterance: str
     behavior_summary: str
     intent_tags: list[str] = Field(default_factory=list)
-    target_guest_ids: list[str] = Field(default_factory=list)
+    target_participant_ids: list[str] = Field(default_factory=list)
+    addressed_from_turn_id: str | None = None
+    topic_tags: list[str] = Field(default_factory=list)
+    next_speaker_suggestions: list[str] = Field(default_factory=list)
     self_observation: str | None = None
 
 
@@ -43,13 +50,17 @@ class SceneEvent(BaseModel):
     title: str
     description: str | None = None
     event_tags: list[str] = Field(default_factory=list)
-    target_guest_ids: list[str] = Field(default_factory=list)
+    source_participant_id: str | None = None
+    target_participant_ids: list[str] = Field(default_factory=list)
+    linked_turn_indices: list[int] = Field(default_factory=list)
 
 
 class SceneRelationshipDelta(BaseModel):
-    guest_id: str
+    source_participant_id: str
+    target_participant_id: str
     changes: dict[str, int]
     reason: str
+    event_tags: list[str] = Field(default_factory=list)
 
     @field_validator("changes")
     @classmethod
@@ -68,13 +79,14 @@ class SceneRefereeResult(BaseModel):
     scene_summary: str
     major_events: list[SceneEvent] = Field(default_factory=list)
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
 
 class SceneRuntimeExecution(BaseModel):
     input_summary: dict
-    director_plan: DirectorPlan
-    director_plan_raw: dict | str
+    orchestrator_plan: SceneOrchestratorPlan
+    orchestrator_raw: dict | str
     messages: list[AgentTurnPayload] = Field(default_factory=list)
     referee_result: SceneRefereeResult
     referee_raw: dict | str
@@ -91,13 +103,62 @@ class TimelineScenePreview(BaseModel):
     replay_url: str | None = None
 
 
+class ParticipantCard(BaseModel):
+    participant_id: str
+    name: str
+    cast_role: str
+    display_order: int
+    personality_summary: str | None = None
+    editable_personality: dict = Field(default_factory=dict)
+
+
 class RelationshipCard(BaseModel):
-    guest_id: str
-    guest_name: str
+    source_participant_id: str
+    source_name: str
+    target_participant_id: str
+    target_name: str
+    relationship_kind: str
     status: str
     trend: str
     top_reasons: list[str] = Field(default_factory=list)
     surface_metrics: dict[str, int] = Field(default_factory=dict)
+    last_event_tags: list[str] = Field(default_factory=list)
+
+
+class HotPair(BaseModel):
+    participant_a_id: str
+    participant_a_name: str
+    participant_b_id: str
+    participant_b_name: str
+    combined_score: int
+    summary: str
+
+
+class RelationshipGraphNode(BaseModel):
+    participant_id: str
+    name: str
+    cast_role: str
+    outgoing_score: int
+    incoming_score: int
+    total_score: int
+
+
+class RelationshipGraphEdge(BaseModel):
+    source_participant_id: str
+    source_name: str
+    target_participant_id: str
+    target_name: str
+    score: int
+    status: str
+    trend: str
+    strongest_metric: str | None = None
+    last_event_tags: list[str] = Field(default_factory=list)
+
+
+class RelationshipGraphPreview(BaseModel):
+    node_count: int
+    edge_count: int
+    strongest_signals: list[RelationshipCard] = Field(default_factory=list)
 
 
 class SimulationOverviewResponse(BaseModel):
@@ -116,8 +177,26 @@ class SimulationOverviewResponse(BaseModel):
     active_tension: str | None = None
     latest_scene_replay_url: str | None = None
     scene_timeline_preview: list[TimelineScenePreview] = Field(default_factory=list)
+    participants: list[ParticipantCard] = Field(default_factory=list)
     relationship_cards: list[RelationshipCard] = Field(default_factory=list)
+    group_tension_summary: str | None = None
+    hot_pairs: list[HotPair] = Field(default_factory=list)
+    isolated_participants: list[ParticipantCard] = Field(default_factory=list)
+    relationship_graph_preview: RelationshipGraphPreview | None = None
     recent_audit_logs: list[dict] = Field(default_factory=list)
+
+
+class SceneRound(BaseModel):
+    round_index: int
+    phase_label: str | None = None
+    turns: list[AgentTurnPayload] = Field(default_factory=list)
+
+
+class SpeakerSwitchSummary(BaseModel):
+    participant_id: str
+    name: str
+    turn_count: int
+    addressed_count: int
 
 
 class SceneReplayResponse(BaseModel):
@@ -127,10 +206,13 @@ class SceneReplayResponse(BaseModel):
     scene_index: int
     status: str
     summary: str | None = None
-    scene_plan: DirectorPlan | None = None
+    scene_plan: SceneOrchestratorPlan | None = None
     messages: list[AgentTurnPayload] = Field(default_factory=list)
+    rounds: list[SceneRound] = Field(default_factory=list)
+    speaker_switch_summary: list[SpeakerSwitchSummary] = Field(default_factory=list)
     major_events: list[SceneEvent] = Field(default_factory=list)
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None
 
@@ -142,4 +224,29 @@ class SimulationTimelineResponse(BaseModel):
 
 class SimulationRelationshipsResponse(BaseModel):
     simulation_id: str
+    participants: list[ParticipantCard] = Field(default_factory=list)
     relationships: list[RelationshipCard] = Field(default_factory=list)
+
+
+class SimulationRelationshipGraphResponse(BaseModel):
+    simulation_id: str
+    group_tension_summary: str | None = None
+    nodes: list[RelationshipGraphNode] = Field(default_factory=list)
+    edges: list[RelationshipGraphEdge] = Field(default_factory=list)
+    strongest_signals: list[RelationshipCard] = Field(default_factory=list)
+    hot_pairs: list[HotPair] = Field(default_factory=list)
+    isolated_participants: list[ParticipantCard] = Field(default_factory=list)
+
+
+class PersonalityRecord(BaseModel):
+    participant_id: str
+    name: str
+    cast_role: str
+    editable_personality: dict = Field(default_factory=dict)
+    changed_fields: list[str] = Field(default_factory=list)
+    preset_slug: str | None = None
+
+
+class SimulationPersonalitiesResponse(BaseModel):
+    simulation_id: str
+    personalities: list[PersonalityRecord] = Field(default_factory=list)

@@ -8,7 +8,7 @@ from app.core.queue import SCENE_QUEUE_NAME, get_redis_client
 from app.models import SimulationRun
 from app.services.simulation.runtime import (
     apply_scene_runtime_result,
-    execute_scene_01_intro_runtime,
+    execute_scene_runtime,
 )
 from app.services.simulation.service import (
     claim_scene_by_id,
@@ -38,7 +38,7 @@ def process_scene(scene_run_id: str) -> None:
         db.commit()
 
         try:
-            execution = execute_scene_01_intro_runtime(
+            execution = execute_scene_runtime(
                 db,
                 scene_run,
                 simulation,

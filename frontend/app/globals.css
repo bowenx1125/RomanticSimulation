@@ -255,6 +255,34 @@ textarea {
   box-shadow: 0 14px 30px rgba(203, 106, 64, 0.24);
 }
 
+.secondary-button,
+.soft-tag-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(107, 79, 54, 0.16);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  padding: 0 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.secondary-button:hover,
+.soft-tag-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(203, 106, 64, 0.34);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.secondary-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .primary-button:hover,
 .primary-link:hover {
   transform: translateY(-1px);
@@ -268,7 +296,8 @@ textarea {
 .home-grid,
 .overview-grid,
 .two-panel-layout,
-.relationship-page-grid {
+.relationship-page-grid,
+.participant-grid {
   display: grid;
   gap: 22px;
   margin-top: 24px;
@@ -288,6 +317,10 @@ textarea {
 
 .relationship-page-grid {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.participant-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .content-card,
@@ -321,7 +354,7 @@ textarea {
   margin: 8px 0 0;
 }
 
-.protagonist-card p,
+.participant-card p,
 .guest-preview-card p,
 .timeline-card p,
 .relationship-overview-card p,
@@ -419,12 +452,18 @@ textarea {
 .strategy-option span {
   display: block;
   margin-bottom: 6px;
-  font-weight: 700;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .strategy-option small {
   color: var(--muted);
   line-height: 1.5;
+}
+
+.strategy-option strong {
+  display: block;
+  margin-bottom: 6px;
 }
 
 .strategy-option.active {
@@ -440,6 +479,78 @@ textarea {
   margin-top: 18px;
 }
 
+.participant-list,
+.participant-list-panel,
+.relationship-edge-list,
+.personality-list {
+  display: grid;
+  gap: 14px;
+}
+
+.participant-list-panel {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 24px;
+}
+
+.participant-mini-card,
+.relationship-edge-card {
+  padding: 16px;
+  border: 1px solid rgba(107, 79, 54, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.participant-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.participant-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selection-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.selection-toggle input {
+  accent-color: var(--accent);
+}
+
+.two-column-fields,
+.slider-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field-block {
+  display: block;
+}
+
+.field-block input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.relationship-edge-list {
+  margin-top: 18px;
+}
+
+.personality-row {
+  display: grid;
+  gap: 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(107, 79, 54, 0.08);
+}
+
 .guest-preview-card,
 .relationship-detail-card,
 .relationship-overview-card,
@@ -447,6 +558,12 @@ textarea {
 .message-card,
 .audit-card {
   padding: 18px;
+}
+
+.inset-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .mini-meta {
@@ -598,7 +715,8 @@ textarea {
 
 .status-running,
 .status-claimed,
-.status-queued {
+.status-queued,
+.status-pending {
   background: rgba(201, 138, 41, 0.15);
   color: #8b5b10;
 }
@@ -630,7 +748,8 @@ textarea {
   .home-grid,
   .overview-grid,
   .two-panel-layout,
-  .plan-grid {
+  .plan-grid,
+  .participant-grid {
     grid-template-columns: 1fr;
   }
 
@@ -666,10 +785,16 @@ textarea {
     align-items: flex-start;
   }
 
+  .two-column-fields,
+  .slider-grid {
+    grid-template-columns: 1fr;
+  }
+
   .ghost-link,
   .text-link,
   .primary-button,
-  .primary-link {
+  .primary-link,
+  .secondary-button {
     width: 100%;
   }
 }
