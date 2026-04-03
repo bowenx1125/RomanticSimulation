@@ -104,6 +104,19 @@ class SceneCompetitionMapItem(BaseModel):
         return value
 
 
+class SceneSelectionResult(BaseModel):
+    selector_participant_id: str
+    selector_name: str
+    selected_target_participant_id: str
+    selected_target_name: str
+    outcome_type: str
+    conversation_summary: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
 class SceneRefereeResult(BaseModel):
     scene_id: str
     scene_summary: str
@@ -111,6 +124,7 @@ class SceneRefereeResult(BaseModel):
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
     pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
     competition_map: list[SceneCompetitionMapItem] = Field(default_factory=list)
+    selection_results: list[SceneSelectionResult] = Field(default_factory=list)
     participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
@@ -246,6 +260,7 @@ class SceneReplayResponse(BaseModel):
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
     pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
     competition_map: list[SceneCompetitionMapItem] = Field(default_factory=list)
+    selection_results: list[SceneSelectionResult] = Field(default_factory=list)
     group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None

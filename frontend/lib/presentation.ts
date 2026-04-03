@@ -20,6 +20,7 @@ const metricLabels: Record<string, string> = {
   attraction: "吸引力",
   comfort: "舒适度",
   trust: "信任",
+  intimacy: "亲密度",
   understood: "被理解感",
   curiosity: "探索意愿",
   anxiety: "焦虑",
@@ -36,6 +37,7 @@ const sceneLabels: Record<string, string> = {
   scene_02_free_talk: "Scene 02 · 第一次自由交流",
   scene_03_random_date: "Scene 03 · 随机约会",
   scene_04_group_dinner: "Scene 04 · 多人晚餐与暗流",
+  scene_05_conversation_choosing: "Scene 05 · 主动选择交流",
 };
 
 const castRoleLabels: Record<string, string> = {

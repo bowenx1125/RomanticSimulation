@@ -177,6 +177,39 @@ export default function SceneReplayPage() {
             </section>
           ) : null}
 
+          {data.selection_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Selection Results</span>
+                  <h2>Scene 05 选择结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.selection_results.map((item) => (
+                  <article
+                    key={`${item.selector_participant_id}-${item.selected_target_participant_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.selector_name}{" -> "}{item.selected_target_name}
+                    </strong>
+                    <p>{item.conversation_summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className="metric-chip">level: {item.level_semantic}</span>
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`${item.selector_participant_id}-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {data.scene_plan ? (
             <section className="content-card">
               <div className="section-heading">

@@ -252,6 +252,24 @@ export type SceneReplay = {
     reason: string;
     event_tags: string[];
   }>;
+  selection_results: Array<{
+    selector_participant_id: string;
+    selector_name: string;
+    selected_target_participant_id: string;
+    selected_target_name: string;
+    outcome_type: string;
+    conversation_summary: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
   pair_date_results: Array<{
     pair_index: number;
     participant_ids: string[];
