@@ -274,6 +274,68 @@ export default function SceneReplayPage() {
             </section>
           ) : null}
 
+          {data.invitation_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Invitation Results</span>
+                  <h2>Scene 07 邀约结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.invitation_results.map((item) => (
+                  <article
+                    key={`${item.inviter_participant_id}-${item.target_participant_id}-${item.outcome_type}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.inviter_name}{" -> "}{item.target_name}
+                    </strong>
+                    <p>{item.result_summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className="metric-chip">competition: {item.has_competition ? "yes" : "no"}</span>
+                      {item.fallback_used ? <span className="metric-chip">fallback used</span> : null}
+                      {item.withdrew_after_rejection ? <span className="metric-chip">withdrew</span> : null}
+                      {item.marginalization_risk ? <span className="metric-chip">marginalization risk</span> : null}
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`${item.inviter_participant_id}-invite-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.competition_outcomes.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Competition Outcomes</span>
+                  <h2>Scene 07 竞争结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.competition_outcomes.map((item) => (
+                  <article
+                    key={`${item.target_participant_id}-${item.winner_participant_id ?? "none"}`}
+                    className="timeline-card static"
+                  >
+                    <strong>{item.target_name}</strong>
+                    <p>{item.summary}</p>
+                    <div className="metric-chip-row">
+                      {item.winner_name ? <span className="metric-chip">winner: {item.winner_name}</span> : null}
+                      <span className="metric-chip">losers: {item.loser_participant_ids.length}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {data.scene_plan ? (
             <section className="content-card">
               <div className="section-heading">

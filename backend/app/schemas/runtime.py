@@ -147,6 +147,36 @@ class SceneExpectationMissResult(BaseModel):
     level_semantic: str = "level_02_relationship_promotion"
 
 
+class SceneInvitationResult(BaseModel):
+    inviter_participant_id: str
+    inviter_name: str
+    target_participant_id: str
+    target_name: str
+    has_competition: bool = False
+    competing_inviter_ids: list[str] = Field(default_factory=list)
+    outcome_type: str
+    result_summary: str
+    fallback_used: bool = False
+    withdrew_after_rejection: bool = False
+    marginalization_risk: bool = False
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
+class SceneCompetitionOutcome(BaseModel):
+    target_participant_id: str
+    target_name: str
+    inviter_participant_ids: list[str] = Field(default_factory=list)
+    winner_participant_id: str | None = None
+    winner_name: str | None = None
+    loser_participant_ids: list[str] = Field(default_factory=list)
+    summary: str
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
 class SceneRefereeResult(BaseModel):
     scene_id: str
     scene_summary: str
@@ -157,6 +187,8 @@ class SceneRefereeResult(BaseModel):
     selection_results: list[SceneSelectionResult] = Field(default_factory=list)
     signal_results: list[ScenePrivateSignalResult] = Field(default_factory=list)
     missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
+    invitation_results: list[SceneInvitationResult] = Field(default_factory=list)
+    competition_outcomes: list[SceneCompetitionOutcome] = Field(default_factory=list)
     participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
@@ -295,6 +327,8 @@ class SceneReplayResponse(BaseModel):
     selection_results: list[SceneSelectionResult] = Field(default_factory=list)
     signal_results: list[ScenePrivateSignalResult] = Field(default_factory=list)
     missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
+    invitation_results: list[SceneInvitationResult] = Field(default_factory=list)
+    competition_outcomes: list[SceneCompetitionOutcome] = Field(default_factory=list)
     group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None

@@ -310,6 +310,40 @@ export type SceneReplay = {
     event_tags: string[];
     level_semantic: string;
   }>;
+  invitation_results: Array<{
+    inviter_participant_id: string;
+    inviter_name: string;
+    target_participant_id: string;
+    target_name: string;
+    has_competition: boolean;
+    competing_inviter_ids: string[];
+    outcome_type: string;
+    result_summary: string;
+    fallback_used: boolean;
+    withdrew_after_rejection: boolean;
+    marginalization_risk: boolean;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  competition_outcomes: Array<{
+    target_participant_id: string;
+    target_name: string;
+    inviter_participant_ids: string[];
+    winner_participant_id?: string | null;
+    winner_name?: string | null;
+    loser_participant_ids: string[];
+    summary: string;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
   pair_date_results: Array<{
     pair_index: number;
     participant_ids: string[];
