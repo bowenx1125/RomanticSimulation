@@ -217,7 +217,7 @@ export default function HomePage() {
       setStatus("正在导入 participant 与人格配置...");
       await importParticipants(project.id, payload);
 
-      setStatus("正在启动 scene_01_intro 到 scene_05_conversation_choosing runtime...");
+      setStatus("正在启动 scene_01_intro 到 scene_06_private_signal runtime...");
       const simulation = await createSimulation(project.id, {
         strategyCards: selectedStrategies,
       });
@@ -257,7 +257,7 @@ export default function HomePage() {
           <h1>把“主角恋综”升级成真正的多人关系场</h1>
           <p className="hero-body">
             这里不再是“主角 + 其他人回应”的单中心入口。你会先配置所有 participant
-            的人格，再启动一个连续运行的 runtime，让 scene_01_intro、scene_02_free_talk、scene_03_random_date、scene_04_group_dinner 和 scene_05_conversation_choosing
+            的人格，再启动一个连续运行的 runtime，让 scene_01_intro、scene_02_free_talk、scene_03_random_date、scene_04_group_dinner、scene_05_conversation_choosing 和 scene_06_private_signal
             在同一局里形成真实的多人多轮关系图。
           </p>
           <div className="hero-metrics">
@@ -266,8 +266,8 @@ export default function HomePage() {
               <span>每个人都能被调整人格、主动发言、影响他人与被他人观察。</span>
             </article>
             <article>
-              <strong>五场连续 runtime</strong>
-              <span>scene_01_intro 建立张力，scene_02_free_talk 拉开偏好，scene_03_random_date 触发意外连接，scene_04_group_dinner 放大多人竞争，scene_05_conversation_choosing 明确主动选择方向。</span>
+              <strong>六场连续 runtime</strong>
+              <span>scene_01_intro 建立张力，scene_02_free_talk 拉开偏好，scene_03_random_date 触发意外连接，scene_04_group_dinner 放大多人竞争，scene_05_conversation_choosing 明确主动选择方向，scene_06_private_signal 揭示私密信号与期待落差。</span>
             </article>
             <article>
               <strong>Pairwise Graph</strong>
@@ -323,7 +323,7 @@ export default function HomePage() {
             <h2>全局策略偏置</h2>
           </div>
         </div>
-        <p className="card-intro">选择最多 2 张，影响五场 scene 的整体互动倾向。</p>
+        <p className="card-intro">选择最多 2 张，影响六场 scene 的整体互动倾向。</p>
         <div className="strategy-list">
           {strategyOptions.map((strategy) => {
             const isActive = selectedStrategies.includes(strategy.id);

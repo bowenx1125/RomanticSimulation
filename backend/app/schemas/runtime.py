@@ -117,6 +117,36 @@ class SceneSelectionResult(BaseModel):
     level_semantic: str = "level_02_relationship_promotion"
 
 
+class ScenePrivateSignalResult(BaseModel):
+    sender_participant_id: str
+    sender_name: str
+    recipient_participant_id: str
+    recipient_name: str
+    signal_summary: str
+    signal_clarity: str
+    recipient_interpretation: str
+    outcome_type: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
+class SceneExpectationMissResult(BaseModel):
+    participant_id: str
+    participant_name: str
+    expected_from_participant_id: str
+    expected_from_participant_name: str
+    received: bool = False
+    expectation_gap_delta: int = 0
+    disappointment_delta: int = 0
+    trust_delta: int = 0
+    reason: str
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
 class SceneRefereeResult(BaseModel):
     scene_id: str
     scene_summary: str
@@ -125,6 +155,8 @@ class SceneRefereeResult(BaseModel):
     pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
     competition_map: list[SceneCompetitionMapItem] = Field(default_factory=list)
     selection_results: list[SceneSelectionResult] = Field(default_factory=list)
+    signal_results: list[ScenePrivateSignalResult] = Field(default_factory=list)
+    missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
     participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
@@ -261,6 +293,8 @@ class SceneReplayResponse(BaseModel):
     pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
     competition_map: list[SceneCompetitionMapItem] = Field(default_factory=list)
     selection_results: list[SceneSelectionResult] = Field(default_factory=list)
+    signal_results: list[ScenePrivateSignalResult] = Field(default_factory=list)
+    missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
     group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None

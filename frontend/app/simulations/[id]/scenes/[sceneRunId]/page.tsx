@@ -210,6 +210,70 @@ export default function SceneReplayPage() {
             </section>
           ) : null}
 
+          {data.signal_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Private Signals</span>
+                  <h2>Scene 06 私密信号结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.signal_results.map((item) => (
+                  <article
+                    key={`${item.sender_participant_id}-${item.recipient_participant_id}-${item.outcome_type}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.sender_name}{" -> "}{item.recipient_name}
+                    </strong>
+                    <p>{item.signal_summary}</p>
+                    <p className="card-footnote">接收解读：{item.recipient_interpretation}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">clarity: {item.signal_clarity}</span>
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className="metric-chip">level: {item.level_semantic}</span>
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`${item.sender_participant_id}-signal-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.missed_expectations.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Expectation Miss</span>
+                  <h2>Scene 06 期待落空结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.missed_expectations.map((item) => (
+                  <article
+                    key={`${item.participant_id}-${item.expected_from_participant_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.participant_name} 未收到 {item.expected_from_participant_name} 的私密信号
+                    </strong>
+                    <p>{item.reason}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">expectation_gap: +{item.expectation_gap_delta}</span>
+                      <span className="metric-chip">disappointment: +{item.disappointment_delta}</span>
+                      <span className="metric-chip">trust: {item.trust_delta}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {data.scene_plan ? (
             <section className="content-card">
               <div className="section-heading">

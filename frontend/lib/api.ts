@@ -270,6 +270,46 @@ export type SceneReplay = {
     event_tags: string[];
     level_semantic: string;
   }>;
+  signal_results: Array<{
+    sender_participant_id: string;
+    sender_name: string;
+    recipient_participant_id: string;
+    recipient_name: string;
+    signal_summary: string;
+    signal_clarity: string;
+    recipient_interpretation: string;
+    outcome_type: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  missed_expectations: Array<{
+    participant_id: string;
+    participant_name: string;
+    expected_from_participant_id: string;
+    expected_from_participant_name: string;
+    received: boolean;
+    expectation_gap_delta: number;
+    disappointment_delta: number;
+    trust_delta: number;
+    reason: string;
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
   pair_date_results: Array<{
     pair_index: number;
     participant_ids: string[];

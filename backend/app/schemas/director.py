@@ -13,6 +13,7 @@ ALLOWED_METRICS = {
     "anxiety",
     "curiosity",
     "intimacy",
+    "expectation_gap",
     "competition_sense",
     "exclusivity_pressure",
     "commitment_alignment",

@@ -25,6 +25,7 @@ const metricLabels: Record<string, string> = {
   curiosity: "探索意愿",
   anxiety: "焦虑",
   competition_sense: "竞争感",
+  expectation_gap: "期待落差",
   expectation: "期待",
   disappointment: "失望",
   conflict: "冲突",
@@ -38,6 +39,7 @@ const sceneLabels: Record<string, string> = {
   scene_03_random_date: "Scene 03 · 随机约会",
   scene_04_group_dinner: "Scene 04 · 多人晚餐与暗流",
   scene_05_conversation_choosing: "Scene 05 · 主动选择交流",
+  scene_06_private_signal: "Scene 06 · 匿名表达与私密信号",
 };
 
 const castRoleLabels: Record<string, string> = {

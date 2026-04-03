@@ -736,5 +736,7 @@ def build_relationship_surface_metrics(metrics: dict) -> dict[str, int]:
         "curiosity",
         "anxiety",
         "expectation",
+        "expectation_gap",
+        "disappointment",
     ]
     return {key: int(metrics.get(key, 0)) for key in keys}
