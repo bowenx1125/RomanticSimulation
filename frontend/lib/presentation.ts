@@ -33,6 +33,7 @@ const metricLabels: Record<string, string> = {
 const sceneLabels: Record<string, string> = {
   scene_01_intro: "Scene 01 · 破冰初见",
   scene_02_free_talk: "Scene 02 · 第一次自由交流",
+  scene_03_random_date: "Scene 03 · 随机约会",
 };
 
 const castRoleLabels: Record<string, string> = {

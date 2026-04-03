@@ -21,7 +21,10 @@ from app.models import (
 )
 from app.schemas.project import ParticipantImportPayload, ParticipantImportRequest, ProjectCreateRequest
 from app.schemas.simulation import SimulationCreateRequest
-from app.services.simulation.scene_registry import PHASE3_SCENE_REGISTRY, SCENE_01_CODE
+from app.services.simulation.scene_registry import (
+    PHASE3_SCENE_REGISTRY,
+    SCENE_01_CODE,
+)
 
 
 BUILTIN_PERSONALITY_PRESETS = [

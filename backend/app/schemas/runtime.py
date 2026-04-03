@@ -20,6 +20,7 @@ class SceneOrchestratorPlan(BaseModel):
     scene_id: str
     scene_goal: str
     scene_frame: str
+    scene_level: str | None = None
     participants: list[PlanParticipant]
     min_turns: int
     max_turns: int
@@ -74,11 +75,25 @@ class SceneRelationshipDelta(BaseModel):
         return value
 
 
+class ScenePairDateResult(BaseModel):
+    pair_index: int
+    participant_ids: list[str] = Field(default_factory=list)
+    participant_names: list[str] = Field(default_factory=list)
+    interaction_type: str = "pair_date"
+    spark_level: str = "neutral"
+    summary: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    affects_future_candidate: bool = False
+    level_semantic: str = "level_01_beginning_appeal"
+
+
 class SceneRefereeResult(BaseModel):
     scene_id: str
     scene_summary: str
     major_events: list[SceneEvent] = Field(default_factory=list)
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
     participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
@@ -212,6 +227,7 @@ class SceneReplayResponse(BaseModel):
     speaker_switch_summary: list[SpeakerSwitchSummary] = Field(default_factory=list)
     major_events: list[SceneEvent] = Field(default_factory=list)
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
     group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None

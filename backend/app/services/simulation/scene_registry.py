@@ -1,5 +1,6 @@
 SCENE_01_CODE = "scene_01_intro"
 SCENE_02_CODE = "scene_02_free_talk"
+SCENE_03_CODE = "scene_03_random_date"
 
 PHASE3_SCENE_REGISTRY = {
     SCENE_01_CODE: {
@@ -14,6 +15,13 @@ PHASE3_SCENE_REGISTRY = {
         "runtime": "multi_round_group",
         "status": "active",
         "min_turns": 8,
+        "max_turns": 16,
+    },
+    SCENE_03_CODE: {
+        "scene_index": 3,
+        "runtime": "multi_round_group",
+        "status": "active",
+        "min_turns": 4,
         "max_turns": 16,
     },
 }

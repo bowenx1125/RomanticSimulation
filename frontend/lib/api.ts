@@ -178,6 +178,7 @@ export type SceneReplay = {
   summary?: string;
   scene_plan?: {
     scene_id: string;
+    scene_level?: string | null;
     scene_goal: string;
     scene_frame: string;
     participants: Array<{ participant_id: string; name: string; cast_role: string }>;
@@ -243,11 +244,38 @@ export type SceneReplay = {
     reason: string;
     event_tags: string[];
   }>;
+  pair_date_results: Array<{
+    pair_index: number;
+    participant_ids: string[];
+    participant_names: string[];
+    interaction_type: string;
+    spark_level: string;
+    summary: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    affects_future_candidate: boolean;
+    level_semantic: string;
+  }>;
   group_state_after_scene: {
     dominant_topics: string[];
     attention_distribution: Array<{ participant_id: string; name: string; mentions: number }>;
     tension_pairs: Array<{ participant_ids: string[]; names: string[]; pressure: number }>;
     isolated_participants: string[];
+    matching_plan?: {
+      pairs: Array<{
+        pair_index: number;
+        participant_a_id: string;
+        participant_b_id: string;
+      }>;
+      waiting_participant_id?: string | null;
+    };
+    scene_level?: string;
   };
   next_tension?: string;
   replay_url?: string;

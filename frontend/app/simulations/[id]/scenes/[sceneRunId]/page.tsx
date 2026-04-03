@@ -93,6 +93,49 @@ export default function SceneReplayPage() {
             </article>
           </section>
 
+          {data.pair_date_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Random Date Pairs</span>
+                  <h2>Scene 03 配对结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.pair_date_results.map((pair) => (
+                  <article key={`pair-${pair.pair_index}`} className="timeline-card static">
+                    <strong>
+                      Pair {pair.pair_index} · {pair.participant_names.join(" x ")}
+                    </strong>
+                    <p>{pair.summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">spark: {pair.spark_level}</span>
+                      <span className="metric-chip">level: {pair.level_semantic}</span>
+                      <span className="metric-chip">
+                        {pair.affects_future_candidate ? "进入后续候选" : "暂不进入候选"}
+                      </span>
+                    </div>
+                    <ul className="reason-list">
+                      {pair.key_events.map((event, index) => (
+                        <li key={`${pair.pair_index}-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+                {data.group_state_after_scene.matching_plan?.waiting_participant_id ? (
+                  <article className="timeline-card static">
+                    <strong>轮空观察位</strong>
+                    <p>
+                      {participantNameMap[data.group_state_after_scene.matching_plan.waiting_participant_id] ??
+                        data.group_state_after_scene.matching_plan.waiting_participant_id}
+                      本轮轮空，情绪变化主要来自旁观结果。
+                    </p>
+                  </article>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
           {data.scene_plan ? (
             <section className="content-card">
               <div className="section-heading">
@@ -186,6 +229,11 @@ export default function SceneReplayPage() {
                   </div>
                 </article>
               ))}
+              {!data.rounds.length ? (
+                <article className="content-card inset-card">
+                  <p>本场以配对结果为主，没有多轮逐 turn transcript。</p>
+                </article>
+              ) : null}
             </div>
           </section>
 
@@ -231,7 +279,7 @@ export default function SceneReplayPage() {
                 <article className="timeline-card static">
                   <strong>Dominant Topics</strong>
                   <div className="tag-row">
-                    {data.group_state_after_scene.dominant_topics.map((topic) => (
+                    {(data.group_state_after_scene.dominant_topics ?? []).map((topic) => (
                       <span key={topic} className="soft-tag">
                         {topic}
                       </span>
@@ -241,7 +289,7 @@ export default function SceneReplayPage() {
                 <article className="timeline-card static">
                   <strong>Tension Pairs</strong>
                   <ul className="reason-list">
-                    {data.group_state_after_scene.tension_pairs.map((pair) => (
+                    {(data.group_state_after_scene.tension_pairs ?? []).map((pair) => (
                       <li key={pair.names.join("-")}>
                         {pair.names.join(" / ")} · pressure {pair.pressure}
                       </li>

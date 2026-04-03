@@ -25,7 +25,7 @@ const strategyOptions = [
   {
     id: "seek_common_ground",
     title: "主动找共同点",
-    description: "让 scene_02 更容易出现舒适感和被理解感。",
+    description: "更快建立舒适感和被理解感。",
   },
   {
     id: "ask_deeper_questions",
@@ -217,7 +217,7 @@ export default function HomePage() {
       setStatus("正在导入 participant 与人格配置...");
       await importParticipants(project.id, payload);
 
-      setStatus("正在启动 scene_01_intro 与 scene_02_free_talk runtime...");
+      setStatus("正在启动 scene_01_intro 到 scene_03_random_date runtime...");
       const simulation = await createSimulation(project.id, {
         strategyCards: selectedStrategies,
       });
@@ -257,7 +257,7 @@ export default function HomePage() {
           <h1>把“主角恋综”升级成真正的多人关系场</h1>
           <p className="hero-body">
             这里不再是“主角 + 其他人回应”的单中心入口。你会先配置所有 participant
-            的人格，再启动一个连续运行的 runtime，让 scene_01_intro 和 scene_02_free_talk
+            的人格，再启动一个连续运行的 runtime，让 scene_01_intro、scene_02_free_talk 和 scene_03_random_date
             在同一局里形成真实的多人多轮关系图。
           </p>
           <div className="hero-metrics">
@@ -266,8 +266,8 @@ export default function HomePage() {
               <span>每个人都能被调整人格、主动发言、影响他人与被他人观察。</span>
             </article>
             <article>
-              <strong>两场连续 runtime</strong>
-              <span>scene_01_intro 建立张力，scene_02_free_talk 把舒适度和误读拉开。</span>
+              <strong>三场连续 runtime</strong>
+              <span>scene_01_intro 建立张力，scene_02_free_talk 拉开偏好，scene_03_random_date 验证意外连接。</span>
             </article>
             <article>
               <strong>Pairwise Graph</strong>
@@ -323,7 +323,7 @@ export default function HomePage() {
             <h2>全局策略偏置</h2>
           </div>
         </div>
-        <p className="card-intro">选择最多 2 张，影响两场 scene 的整体互动倾向。</p>
+        <p className="card-intro">选择最多 2 张，影响三场 scene 的整体互动倾向。</p>
         <div className="strategy-list">
           {strategyOptions.map((strategy) => {
             const isActive = selectedStrategies.includes(strategy.id);
