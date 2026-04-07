@@ -20,9 +20,13 @@ const metricLabels: Record<string, string> = {
   attraction: "吸引力",
   comfort: "舒适度",
   trust: "信任",
+  intimacy: "亲密度",
   understood: "被理解感",
   curiosity: "探索意愿",
   anxiety: "焦虑",
+  competition_sense: "竞争感",
+  self_esteem: "自尊波动",
+  expectation_gap: "期待落差",
   expectation: "期待",
   disappointment: "失望",
   conflict: "冲突",
@@ -33,6 +37,11 @@ const metricLabels: Record<string, string> = {
 const sceneLabels: Record<string, string> = {
   scene_01_intro: "Scene 01 · 破冰初见",
   scene_02_free_talk: "Scene 02 · 第一次自由交流",
+  scene_03_random_date: "Scene 03 · 随机约会",
+  scene_04_group_dinner: "Scene 04 · 多人晚餐与暗流",
+  scene_05_conversation_choosing: "Scene 05 · 主动选择交流",
+  scene_06_private_signal: "Scene 06 · 匿名表达与私密信号",
+  scene_07_new_date: "Scene 07 · 主动约会竞争",
 };
 
 const castRoleLabels: Record<string, string> = {
@@ -45,6 +54,21 @@ const strategyCardLabels: Record<string, string> = {
   playful_opening: "俏皮开场",
   seek_common_ground: "主动找共同点",
   ask_deeper_questions: "追问更深层",
+  hold_center: "稳住场面",
+  focus_one_person: "聚焦一人",
+  avoid_competition: "回避竞争",
+  choose_by_emotion: "按心动选择",
+  choose_by_stability: "按稳定性选择",
+  test_uncertain_target: "试探不确定对象",
+  wait_to_be_chosen: "等待被选择",
+  send_clear_signal: "发送明确信号",
+  keep_ambiguity: "保持模糊",
+  protect_self_image: "保护自我形象",
+  signal_multiple_targets: "多目标分散信号",
+  act_first: "先手邀约",
+  compete_for_top_choice: "争夺第一目标",
+  fallback_strategy: "次优回退策略",
+  withdraw_if_rejected: "被拒后退出",
 };
 
 const strategyCardDescriptions: Record<string, string> = {
@@ -52,6 +76,21 @@ const strategyCardDescriptions: Record<string, string> = {
   playful_opening: "提高火花感和注意力，容易催出交叉互动。",
   seek_common_ground: "更快建立舒适感和被理解感。",
   ask_deeper_questions: "更早暴露价值观，也更容易筛出真正聊得来的人。",
+  hold_center: "提高公开场合稳定度，降低失态风险。",
+  focus_one_person: "公开释放偏好，可能放大竞争感。",
+  avoid_competition: "减少正面对位冲突，但可能降低存在感。",
+  choose_by_emotion: "优先按吸引力和情绪驱动做选择。",
+  choose_by_stability: "优先按信任和稳定性做选择。",
+  test_uncertain_target: "主动试探高不确定关系。",
+  wait_to_be_chosen: "降低主动暴露，等待对方动作。",
+  send_clear_signal: "提高表达清晰度，也提高落空风险。",
+  keep_ambiguity: "保留退路，降低推进强度。",
+  protect_self_image: "偏防御表达，降低直接受伤风险。",
+  signal_multiple_targets: "分散表达，降低单点风险但增加误判。",
+  act_first: "提高抢先邀约概率。",
+  compete_for_top_choice: "优先争夺第一目标，失败成本更高。",
+  fallback_strategy: "首邀失败后尝试次优对象。",
+  withdraw_if_rejected: "被拒后退出，避免二次冲突。",
 };
 
 const personalityFieldLabels: Record<string, string> = {

@@ -20,6 +20,7 @@ class SceneOrchestratorPlan(BaseModel):
     scene_id: str
     scene_goal: str
     scene_frame: str
+    scene_level: str | None = None
     participants: list[PlanParticipant]
     min_turns: int
     max_turns: int
@@ -74,11 +75,120 @@ class SceneRelationshipDelta(BaseModel):
         return value
 
 
+class ScenePairDateResult(BaseModel):
+    pair_index: int
+    participant_ids: list[str] = Field(default_factory=list)
+    participant_names: list[str] = Field(default_factory=list)
+    interaction_type: str = "pair_date"
+    spark_level: str = "neutral"
+    summary: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    affects_future_candidate: bool = False
+    level_semantic: str = "level_01_beginning_appeal"
+
+
+class SceneCompetitionMapItem(BaseModel):
+    source_participant_id: str
+    target_participant_id: str
+    focus_participant_id: str | None = None
+    competition_sense: int = 0
+    reason: str
+    event_tags: list[str] = Field(default_factory=list)
+
+    @field_validator("competition_sense")
+    @classmethod
+    def validate_competition_sense(cls, value: int) -> int:
+        if value < 0 or value > 100:
+            raise ValueError("competition_sense must stay within [0, 100]")
+        return value
+
+
+class SceneSelectionResult(BaseModel):
+    selector_participant_id: str
+    selector_name: str
+    selected_target_participant_id: str
+    selected_target_name: str
+    outcome_type: str
+    conversation_summary: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
+class ScenePrivateSignalResult(BaseModel):
+    sender_participant_id: str
+    sender_name: str
+    recipient_participant_id: str
+    recipient_name: str
+    signal_summary: str
+    signal_clarity: str
+    recipient_interpretation: str
+    outcome_type: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
+class SceneExpectationMissResult(BaseModel):
+    participant_id: str
+    participant_name: str
+    expected_from_participant_id: str
+    expected_from_participant_name: str
+    received: bool = False
+    expectation_gap_delta: int = 0
+    disappointment_delta: int = 0
+    trust_delta: int = 0
+    reason: str
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
+class SceneInvitationResult(BaseModel):
+    inviter_participant_id: str
+    inviter_name: str
+    target_participant_id: str
+    target_name: str
+    has_competition: bool = False
+    competing_inviter_ids: list[str] = Field(default_factory=list)
+    outcome_type: str
+    result_summary: str
+    fallback_used: bool = False
+    withdrew_after_rejection: bool = False
+    marginalization_risk: bool = False
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
+class SceneCompetitionOutcome(BaseModel):
+    target_participant_id: str
+    target_name: str
+    inviter_participant_ids: list[str] = Field(default_factory=list)
+    winner_participant_id: str | None = None
+    winner_name: str | None = None
+    loser_participant_ids: list[str] = Field(default_factory=list)
+    summary: str
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_02_relationship_promotion"
+
+
 class SceneRefereeResult(BaseModel):
     scene_id: str
     scene_summary: str
     major_events: list[SceneEvent] = Field(default_factory=list)
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
+    competition_map: list[SceneCompetitionMapItem] = Field(default_factory=list)
+    selection_results: list[SceneSelectionResult] = Field(default_factory=list)
+    signal_results: list[ScenePrivateSignalResult] = Field(default_factory=list)
+    missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
+    invitation_results: list[SceneInvitationResult] = Field(default_factory=list)
+    competition_outcomes: list[SceneCompetitionOutcome] = Field(default_factory=list)
     participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
@@ -212,6 +322,13 @@ class SceneReplayResponse(BaseModel):
     speaker_switch_summary: list[SpeakerSwitchSummary] = Field(default_factory=list)
     major_events: list[SceneEvent] = Field(default_factory=list)
     relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    pair_date_results: list[ScenePairDateResult] = Field(default_factory=list)
+    competition_map: list[SceneCompetitionMapItem] = Field(default_factory=list)
+    selection_results: list[SceneSelectionResult] = Field(default_factory=list)
+    signal_results: list[ScenePrivateSignalResult] = Field(default_factory=list)
+    missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
+    invitation_results: list[SceneInvitationResult] = Field(default_factory=list)
+    competition_outcomes: list[SceneCompetitionOutcome] = Field(default_factory=list)
     group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None

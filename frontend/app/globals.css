@@ -65,6 +65,9 @@ textarea {
   max-width: 1240px;
   margin: 0 auto;
   padding: 40px 20px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .hero-card,
@@ -123,8 +126,8 @@ textarea {
 }
 
 .hero-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   margin-top: 28px;
 }
@@ -166,6 +169,10 @@ textarea {
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(255, 251, 245, 0.92), rgba(249, 239, 228, 0.92));
   border: 1px solid rgba(107, 79, 54, 0.14);
+}
+
+.launch-panel button.primary-button {
+  margin-bottom: 12px;
 }
 
 .panel-header h2 {
@@ -253,6 +260,7 @@ textarea {
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
   box-shadow: 0 14px 30px rgba(203, 106, 64, 0.24);
+  white-space: nowrap;
 }
 
 .secondary-button,
@@ -309,6 +317,30 @@ textarea {
 
 .overview-grid {
   grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(220px, 0.55fr));
+}
+
+.overview-grid:has(> .overview-hero-card) {
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+}
+
+.overview-grid:has(> .overview-hero-card):has(> article:nth-child(4)) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.overview-grid:has(> .overview-hero-card):has(> article:nth-child(4)) > article:nth-child(1) {
+  grid-column: 1 / -1;
+}
+
+.overview-grid:has(> .overview-hero-card):has(> article:nth-child(4)) > article:nth-child(2) {
+  order: 3;
+}
+
+.overview-grid:has(> .overview-hero-card):has(> article:nth-child(4)) > article:nth-child(3) {
+  order: 4;
+}
+
+.overview-grid:has(> .overview-hero-card):has(> article:nth-child(4)) > article:nth-child(4) {
+  order: 2;
 }
 
 .two-panel-layout {
@@ -395,6 +427,10 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.overview-grid:has(> .overview-hero-card):has(> article:nth-child(4)) > article:nth-child(3) .tag-row {
+  margin-top: 24px;
 }
 
 .soft-tag,
@@ -584,11 +620,15 @@ textarea {
 }
 
 .app-header {
-  margin-bottom: 24px;
+  margin-bottom: 0px;
 }
 
 .header-actions {
+  display: flex;
   align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  gap: 12px;
 }
 
 .ghost-link,
@@ -600,11 +640,21 @@ textarea {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.58);
   border: 1px solid rgba(107, 79, 54, 0.12);
+  white-space: nowrap;
 }
 
 .overview-hero-card h2 {
   margin: 12px 0 12px;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.overview-hero-card .meta-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 32px;
 }
 
 .compact-stat-card {

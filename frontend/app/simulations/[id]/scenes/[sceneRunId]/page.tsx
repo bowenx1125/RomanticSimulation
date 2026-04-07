@@ -93,6 +93,249 @@ export default function SceneReplayPage() {
             </article>
           </section>
 
+          {data.pair_date_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Random Date Pairs</span>
+                  <h2>Scene 03 配对结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.pair_date_results.map((pair) => (
+                  <article key={`pair-${pair.pair_index}`} className="timeline-card static">
+                    <strong>
+                      Pair {pair.pair_index} · {pair.participant_names.join(" x ")}
+                    </strong>
+                    <p>{pair.summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">spark: {pair.spark_level}</span>
+                      <span className="metric-chip">level: {pair.level_semantic}</span>
+                      <span className="metric-chip">
+                        {pair.affects_future_candidate ? "进入后续候选" : "暂不进入候选"}
+                      </span>
+                    </div>
+                    <ul className="reason-list">
+                      {pair.key_events.map((event, index) => (
+                        <li key={`${pair.pair_index}-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+                {data.group_state_after_scene.matching_plan?.waiting_participant_id ? (
+                  <article className="timeline-card static">
+                    <strong>轮空观察位</strong>
+                    <p>
+                      {participantNameMap[data.group_state_after_scene.matching_plan.waiting_participant_id] ??
+                        data.group_state_after_scene.matching_plan.waiting_participant_id}
+                      本轮轮空，情绪变化主要来自旁观结果。
+                    </p>
+                  </article>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
+          {data.competition_map.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Competition Map</span>
+                  <h2>Scene 04 竞争图谱</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.competition_map.map((item) => (
+                  <article
+                    key={`${item.source_participant_id}-${item.target_participant_id}-${item.focus_participant_id ?? "none"}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {participantNameMap[item.source_participant_id] ?? item.source_participant_id}
+                      {" vs "}
+                      {participantNameMap[item.target_participant_id] ?? item.target_participant_id}
+                    </strong>
+                    <p>{item.reason}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">competition_sense: {item.competition_sense}</span>
+                      {item.focus_participant_id ? (
+                        <span className="metric-chip">
+                          focus: {participantNameMap[item.focus_participant_id] ?? item.focus_participant_id}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="tag-row">
+                      {item.event_tags.map((tag) => (
+                        <span key={tag} className="soft-tag muted">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.selection_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Selection Results</span>
+                  <h2>Scene 05 选择结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.selection_results.map((item) => (
+                  <article
+                    key={`${item.selector_participant_id}-${item.selected_target_participant_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.selector_name}{" -> "}{item.selected_target_name}
+                    </strong>
+                    <p>{item.conversation_summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className="metric-chip">level: {item.level_semantic}</span>
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`${item.selector_participant_id}-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.signal_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Private Signals</span>
+                  <h2>Scene 06 私密信号结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.signal_results.map((item) => (
+                  <article
+                    key={`${item.sender_participant_id}-${item.recipient_participant_id}-${item.outcome_type}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.sender_name}{" -> "}{item.recipient_name}
+                    </strong>
+                    <p>{item.signal_summary}</p>
+                    <p className="card-footnote">接收解读：{item.recipient_interpretation}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">clarity: {item.signal_clarity}</span>
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className="metric-chip">level: {item.level_semantic}</span>
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`${item.sender_participant_id}-signal-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.missed_expectations.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Expectation Miss</span>
+                  <h2>Scene 06 期待落空结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.missed_expectations.map((item) => (
+                  <article
+                    key={`${item.participant_id}-${item.expected_from_participant_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.participant_name} 未收到 {item.expected_from_participant_name} 的私密信号
+                    </strong>
+                    <p>{item.reason}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">expectation_gap: +{item.expectation_gap_delta}</span>
+                      <span className="metric-chip">disappointment: +{item.disappointment_delta}</span>
+                      <span className="metric-chip">trust: {item.trust_delta}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.invitation_results.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Invitation Results</span>
+                  <h2>Scene 07 邀约结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.invitation_results.map((item) => (
+                  <article
+                    key={`${item.inviter_participant_id}-${item.target_participant_id}-${item.outcome_type}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.inviter_name}{" -> "}{item.target_name}
+                    </strong>
+                    <p>{item.result_summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className="metric-chip">competition: {item.has_competition ? "yes" : "no"}</span>
+                      {item.fallback_used ? <span className="metric-chip">fallback used</span> : null}
+                      {item.withdrew_after_rejection ? <span className="metric-chip">withdrew</span> : null}
+                      {item.marginalization_risk ? <span className="metric-chip">marginalization risk</span> : null}
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`${item.inviter_participant_id}-invite-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.competition_outcomes.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Competition Outcomes</span>
+                  <h2>Scene 07 竞争结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.competition_outcomes.map((item) => (
+                  <article
+                    key={`${item.target_participant_id}-${item.winner_participant_id ?? "none"}`}
+                    className="timeline-card static"
+                  >
+                    <strong>{item.target_name}</strong>
+                    <p>{item.summary}</p>
+                    <div className="metric-chip-row">
+                      {item.winner_name ? <span className="metric-chip">winner: {item.winner_name}</span> : null}
+                      <span className="metric-chip">losers: {item.loser_participant_ids.length}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {data.scene_plan ? (
             <section className="content-card">
               <div className="section-heading">
@@ -186,6 +429,11 @@ export default function SceneReplayPage() {
                   </div>
                 </article>
               ))}
+              {!data.rounds.length ? (
+                <article className="content-card inset-card">
+                  <p>本场以配对结果为主，没有多轮逐 turn transcript。</p>
+                </article>
+              ) : null}
             </div>
           </section>
 
@@ -231,7 +479,7 @@ export default function SceneReplayPage() {
                 <article className="timeline-card static">
                   <strong>Dominant Topics</strong>
                   <div className="tag-row">
-                    {data.group_state_after_scene.dominant_topics.map((topic) => (
+                    {(data.group_state_after_scene.dominant_topics ?? []).map((topic) => (
                       <span key={topic} className="soft-tag">
                         {topic}
                       </span>
@@ -241,7 +489,7 @@ export default function SceneReplayPage() {
                 <article className="timeline-card static">
                   <strong>Tension Pairs</strong>
                   <ul className="reason-list">
-                    {data.group_state_after_scene.tension_pairs.map((pair) => (
+                    {(data.group_state_after_scene.tension_pairs ?? []).map((pair) => (
                       <li key={pair.names.join("-")}>
                         {pair.names.join(" / ")} · pressure {pair.pressure}
                       </li>

@@ -21,7 +21,10 @@ from app.models import (
 )
 from app.schemas.project import ParticipantImportPayload, ParticipantImportRequest, ProjectCreateRequest
 from app.schemas.simulation import SimulationCreateRequest
-from app.services.simulation.scene_registry import PHASE3_SCENE_REGISTRY, SCENE_01_CODE
+from app.services.simulation.scene_registry import (
+    PHASE3_SCENE_REGISTRY,
+    SCENE_01_CODE,
+)
 
 
 BUILTIN_PERSONALITY_PRESETS = [
@@ -733,5 +736,8 @@ def build_relationship_surface_metrics(metrics: dict) -> dict[str, int]:
         "curiosity",
         "anxiety",
         "expectation",
+        "expectation_gap",
+        "disappointment",
+        "self_esteem",
     ]
     return {key: int(metrics.get(key, 0)) for key in keys}

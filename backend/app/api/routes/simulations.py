@@ -246,6 +246,12 @@ def get_scene_replay_endpoint(
         speaker_switch_summary=build_speaker_switch_summary(messages),
         major_events=referee.major_events if referee else [],
         relationship_deltas=referee.relationship_deltas if referee else [],
+        competition_map=referee.competition_map if referee else [],
+        selection_results=referee.selection_results if referee else [],
+        signal_results=referee.signal_results if referee else [],
+        missed_expectations=referee.missed_expectations if referee else [],
+        invitation_results=referee.invitation_results if referee else [],
+        competition_outcomes=referee.competition_outcomes if referee else [],
         group_state_after_scene=build_group_state_after_scene(
             messages,
             [item.model_dump() for item in (referee.relationship_deltas if referee else [])],

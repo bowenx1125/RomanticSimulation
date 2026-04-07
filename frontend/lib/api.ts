@@ -178,6 +178,7 @@ export type SceneReplay = {
   summary?: string;
   scene_plan?: {
     scene_id: string;
+    scene_level?: string | null;
     scene_goal: string;
     scene_frame: string;
     participants: Array<{ participant_id: string; name: string; cast_role: string }>;
@@ -243,11 +244,138 @@ export type SceneReplay = {
     reason: string;
     event_tags: string[];
   }>;
+  competition_map: Array<{
+    source_participant_id: string;
+    target_participant_id: string;
+    focus_participant_id?: string | null;
+    competition_sense: number;
+    reason: string;
+    event_tags: string[];
+  }>;
+  selection_results: Array<{
+    selector_participant_id: string;
+    selector_name: string;
+    selected_target_participant_id: string;
+    selected_target_name: string;
+    outcome_type: string;
+    conversation_summary: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  signal_results: Array<{
+    sender_participant_id: string;
+    sender_name: string;
+    recipient_participant_id: string;
+    recipient_name: string;
+    signal_summary: string;
+    signal_clarity: string;
+    recipient_interpretation: string;
+    outcome_type: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  missed_expectations: Array<{
+    participant_id: string;
+    participant_name: string;
+    expected_from_participant_id: string;
+    expected_from_participant_name: string;
+    received: boolean;
+    expectation_gap_delta: number;
+    disappointment_delta: number;
+    trust_delta: number;
+    reason: string;
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  invitation_results: Array<{
+    inviter_participant_id: string;
+    inviter_name: string;
+    target_participant_id: string;
+    target_name: string;
+    has_competition: boolean;
+    competing_inviter_ids: string[];
+    outcome_type: string;
+    result_summary: string;
+    fallback_used: boolean;
+    withdrew_after_rejection: boolean;
+    marginalization_risk: boolean;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  competition_outcomes: Array<{
+    target_participant_id: string;
+    target_name: string;
+    inviter_participant_ids: string[];
+    winner_participant_id?: string | null;
+    winner_name?: string | null;
+    loser_participant_ids: string[];
+    summary: string;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  pair_date_results: Array<{
+    pair_index: number;
+    participant_ids: string[];
+    participant_names: string[];
+    interaction_type: string;
+    spark_level: string;
+    summary: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    affects_future_candidate: boolean;
+    level_semantic: string;
+  }>;
   group_state_after_scene: {
     dominant_topics: string[];
     attention_distribution: Array<{ participant_id: string; name: string; mentions: number }>;
     tension_pairs: Array<{ participant_ids: string[]; names: string[]; pressure: number }>;
     isolated_participants: string[];
+    matching_plan?: {
+      pairs: Array<{
+        pair_index: number;
+        participant_a_id: string;
+        participant_b_id: string;
+      }>;
+      waiting_participant_id?: string | null;
+    };
+    scene_level?: string;
   };
   next_tension?: string;
   replay_url?: string;
