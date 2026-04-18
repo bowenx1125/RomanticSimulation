@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
   createProject,
   createSimulation,
+  ingestWeChatParticipant,
   importParticipants,
   ParticipantEditablePersonality,
   ParticipantImportRequest,
+  listWeChatFiles,
+  WeChatFileSummary,
 } from "../lib/api";
 
 const strategyOptions = [
@@ -174,7 +177,10 @@ export default function HomePage() {
   const router = useRouter();
   const [projectName, setProjectName] = useState("恋爱模拟器 Phase 3");
   const [description, setDescription] = useState("多角色平权关系模拟器");
+  const [sourceMode, setSourceMode] = useState<"wechat" | "manual">("wechat");
   const [payload, setPayload] = useState<ParticipantImportRequest>(initialPayload);
+  const [wechatFiles, setWechatFiles] = useState<WeChatFileSummary[]>([]);
+  const [selectedWeChatFiles, setSelectedWeChatFiles] = useState<string[]>([]);
   const [selectedStrategies, setSelectedStrategies] = useState<string[]>([
     "warm_presence",
     "ask_deeper_questions",
@@ -183,6 +189,29 @@ export default function HomePage() {
   const [error, setError] = useState("");
   const [isLaunching, setIsLaunching] = useState(false);
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+
+  useEffect(() => {
+    let stopped = false;
+
+    async function loadWeChatFiles() {
+      try {
+        const response = await listWeChatFiles();
+        if (!stopped) {
+          setWechatFiles(response.files);
+          setSelectedWeChatFiles(response.files.map((item) => item.file_path));
+        }
+      } catch (loadError) {
+        if (!stopped) {
+          setError(loadError instanceof Error ? loadError.message : "加载 wechat_data 文件失败");
+        }
+      }
+    }
+
+    loadWeChatFiles();
+    return () => {
+      stopped = true;
+    };
+  }, []);
 
   function updateParticipant(index: number, updater: (current: ParticipantImportRequest["participants"][number]) => ParticipantImportRequest["participants"][number]) {
     setPayload((current) => ({
@@ -204,6 +233,31 @@ export default function HomePage() {
     });
   }
 
+  function toggleWeChatFile(filePath: string) {
+    setSelectedWeChatFiles((current) =>
+      current.includes(filePath)
+        ? current.filter((item) => item !== filePath)
+        : [...current, filePath],
+    );
+  }
+
+  async function bootstrapProjectParticipants(projectId: string) {
+    if (sourceMode === "manual") {
+      setStatus("正在导入手动配置的 participant...");
+      await importParticipants(projectId, payload);
+      return;
+    }
+
+    if (!selectedWeChatFiles.length) {
+      throw new Error("请至少选择一个 wechat_data 文件。");
+    }
+
+    for (const filePath of selectedWeChatFiles) {
+      setStatus(`正在根据 ${filePath} 生成默认嘉宾信息...`);
+      await ingestWeChatParticipant(projectId, filePath);
+    }
+  }
+
   async function handleLaunchSimulation() {
     try {
       setIsLaunching(true);
@@ -214,8 +268,7 @@ export default function HomePage() {
         description,
       });
 
-      setStatus("正在导入 participant 与人格配置...");
-      await importParticipants(project.id, payload);
+      await bootstrapProjectParticipants(project.id);
 
       setStatus("正在启动 scene_01_intro 到 scene_07_new_date runtime...");
       const simulation = await createSimulation(project.id, {
@@ -239,7 +292,7 @@ export default function HomePage() {
         name: projectName,
         description,
       });
-      await importParticipants(project.id, payload);
+      await bootstrapProjectParticipants(project.id);
       router.push(`/projects/${project.id}/participants`);
     } catch (workspaceError) {
       setError(workspaceError instanceof Error ? workspaceError.message : "创建 workspace 失败");
@@ -319,11 +372,70 @@ export default function HomePage() {
       <section className="content-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow subtle">Strategy Cards</span>
-            <h2>全局策略偏置</h2>
+            <span className="eyebrow subtle">Participant Source</span>
+            <h2>默认嘉宾来源</h2>
           </div>
         </div>
-        <p className="card-intro">选择最多 2 张，影响七场 scene 的整体互动倾向。</p>
+        <p className="card-intro">默认推荐直接从 `wechat_data` 生成嘉宾信息，进入工作台后你依然可以手动调整每个人的人格。</p>
+        <div className="strategy-list">
+          <button
+            type="button"
+            className={`strategy-option${sourceMode === "wechat" ? " active" : ""}`}
+            onClick={() => setSourceMode("wechat")}
+          >
+            <strong>使用 wechat_data</strong>
+            <span>按 markdown 聊天记录生成默认嘉宾画像。</span>
+          </button>
+          <button
+            type="button"
+            className={`strategy-option${sourceMode === "manual" ? " active" : ""}`}
+            onClick={() => setSourceMode("manual")}
+          >
+            <strong>使用手动示例 cast</strong>
+            <span>继续沿用当前手写的示例参演者配置。</span>
+          </button>
+        </div>
+      </section>
+
+      {sourceMode === "wechat" ? (
+        <section className="content-card">
+          <div className="card-heading">
+            <div>
+              <span className="eyebrow subtle">WeChat Data</span>
+              <h2>从聊天记录生成默认嘉宾</h2>
+            </div>
+          </div>
+          <p className="card-intro">文件名会作为嘉宾名，聊天内容会生成默认的 personality summary 和 editable personality，进入 participant 工作台后可继续手动微调。</p>
+          <div className="participant-list">
+            {wechatFiles.map((item) => (
+              <article key={item.file_path} className="participant-mini-card">
+                <label className="selection-toggle">
+                  <input
+                    type="checkbox"
+                    checked={selectedWeChatFiles.includes(item.file_path)}
+                    onChange={() => toggleWeChatFile(item.file_path)}
+                  />
+                  <span>导入 {item.participant_name}</span>
+                </label>
+                <p>{item.file_path}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="content-card">
+        <div className="card-heading">
+          <div>
+            <span className="eyebrow subtle">Strategy Cards</span>
+            <h2>{sourceMode === "wechat" ? "本局实验策略" : "全局策略偏置"}</h2>
+          </div>
+        </div>
+        <p className="card-intro">
+          {sourceMode === "wechat"
+            ? "微信聊天生成默认人格，策略卡只影响这一局的互动推进。"
+            : "选择最多 2 张，影响七场 scene 的整体互动倾向。"}
+        </p>
         <div className="strategy-list">
           {strategyOptions.map((strategy) => {
             const isActive = selectedStrategies.includes(strategy.id);
@@ -342,8 +454,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="participant-grid">
-        {payload.participants.map((participant, index) => (
+      {sourceMode === "manual" ? (
+        <section className="participant-grid">
+          {payload.participants.map((participant, index) => (
           <article key={participant.name} className="content-card participant-card">
             <div className="card-heading">
               <div>
@@ -516,8 +629,9 @@ export default function HomePage() {
               </label>
             </div>
           </article>
-        ))}
-      </section>
+          ))}
+        </section>
+      ) : null}
     </main>
   );
 }

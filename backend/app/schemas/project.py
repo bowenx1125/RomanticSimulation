@@ -62,6 +62,8 @@ class ParticipantSummary(BaseModel):
     cast_role: str
     city: str | None = None
     occupation: str | None = None
+    background_summary: str | None = None
+    personality_summary: str | None = None
     attachment_style: str | None = None
     display_order: int
     editable_personality: dict = Field(default_factory=dict)

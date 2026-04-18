@@ -86,7 +86,7 @@ export default function SceneReplayPage() {
             <article className="content-card compact-stat-card">
               <h3>轮次范围</h3>
               <ul className="bullet-metrics">
-                <li>当前 turn 数：{data.messages.length}</li>
+                <li>当前 turn 数：{data.messages.length || data.rounds.reduce((sum, r) => sum + r.turns.length, 0)}</li>
                 <li>计划最少：{data.scene_plan?.min_turns ?? "-"}</li>
                 <li>计划最多：{data.scene_plan?.max_turns ?? "-"}</li>
               </ul>
@@ -330,6 +330,142 @@ export default function SceneReplayPage() {
                       {item.winner_name ? <span className="metric-chip">winner: {item.winner_name}</span> : null}
                       <span className="metric-chip">losers: {item.loser_participant_ids.length}</span>
                     </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.conflict_test_results?.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Conflict Test</span>
+                  <h2>Scene 08 冲突压力测试结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.conflict_test_results.map((item) => (
+                  <article
+                    key={`conflict-${item.pair_index}-${item.participant_a_id}-${item.participant_b_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      Pair {item.pair_index} · {item.participant_a_name} vs {item.participant_b_name}
+                    </strong>
+                    <p>{item.summary}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">话题: {item.conflict_topic}</span>
+                      <span className="metric-chip">强度: {item.conflict_intensity}</span>
+                      <span className="metric-chip">outcome: {item.outcome_type}</span>
+                      <span className={`metric-chip ${item.survived ? "" : "metric-chip-danger"}`}>
+                        {item.survived ? "关系存活 ✓" : "关系崩塌 ✗"}
+                      </span>
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`conflict-${item.pair_index}-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.decision_results?.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Decision Night</span>
+                  <h2>Scene 09 关键选择夜结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.decision_results.map((item) => (
+                  <article
+                    key={`decision-${item.participant_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.participant_name}{" → "}{item.final_target_name ?? "未选择"}
+                    </strong>
+                    <p>{item.decision_reason}</p>
+                    <p className="card-footnote">代价评估：{item.cost_assessment}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">承诺等级: {item.commitment_level}</span>
+                      <span className="metric-chip">outcome: {item.event_tags.join(", ") || "—"}</span>
+                      {item.wavering_targets.length ? (
+                        <span className="metric-chip">摇摆对象: {item.wavering_targets.join(", ")}</span>
+                      ) : null}
+                    </div>
+                    <ul className="reason-list">
+                      {item.key_events.map((event, index) => (
+                        <li key={`decision-${item.participant_id}-event-${index}`}>{event}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {data.final_settlement_results?.length ? (
+            <section className="content-card">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow subtle">Final Settlement</span>
+                  <h2>Scene 10 最终结算结果</h2>
+                </div>
+              </div>
+              <div className="timeline-list">
+                {data.final_settlement_results.map((item) => (
+                  <article
+                    key={`settlement-${item.participant_id}`}
+                    className="timeline-card static"
+                  >
+                    <strong>
+                      {item.participant_name}
+                      {item.partner_name ? ` ❤ ${item.partner_name}` : " — 未配对"}
+                    </strong>
+                    <p>{item.relationship_story}</p>
+                    <div className="metric-chip-row">
+                      <span className="metric-chip">状态: {item.final_status}</span>
+                      <span className="metric-chip">恋爱评分: {item.romance_score}</span>
+                      <span className="metric-chip">
+                        {item.level_requirement_met ? "达标 ✓" : "未达标 ✗"}
+                      </span>
+                    </div>
+                    {item.key_turning_points.length ? (
+                      <>
+                        <p className="card-footnote" style={{ marginTop: "0.5rem" }}>关键转折点：</p>
+                        <ul className="reason-list">
+                          {item.key_turning_points.map((point, index) => (
+                            <li key={`settlement-${item.participant_id}-tp-${index}`}>{point}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : null}
+                    {item.success_reasons.length ? (
+                      <>
+                        <p className="card-footnote" style={{ marginTop: "0.5rem" }}>成功原因：</p>
+                        <ul className="reason-list">
+                          {item.success_reasons.map((reason, index) => (
+                            <li key={`settlement-${item.participant_id}-sr-${index}`}>{reason}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : null}
+                    {item.failure_reasons.length ? (
+                      <>
+                        <p className="card-footnote" style={{ marginTop: "0.5rem" }}>失败原因：</p>
+                        <ul className="reason-list">
+                          {item.failure_reasons.map((reason, index) => (
+                            <li key={`settlement-${item.participant_id}-fr-${index}`}>{reason}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : null}
                   </article>
                 ))}
               </div>

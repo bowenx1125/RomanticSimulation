@@ -252,6 +252,9 @@ def get_scene_replay_endpoint(
         missed_expectations=referee.missed_expectations if referee else [],
         invitation_results=referee.invitation_results if referee else [],
         competition_outcomes=referee.competition_outcomes if referee else [],
+        conflict_test_results=referee.conflict_test_results if referee else [],
+        decision_results=referee.decision_results if referee else [],
+        final_settlement_results=referee.final_settlement_results if referee else [],
         group_state_after_scene=build_group_state_after_scene(
             messages,
             [item.model_dump() for item in (referee.relationship_deltas if referee else [])],

@@ -1,3 +1,4 @@
+from app.api.routes.ingestion import router as ingestion_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,6 +19,7 @@ app.add_middleware(
 
 app.include_router(projects_router, prefix=settings.api_prefix)
 app.include_router(simulations_router, prefix=settings.api_prefix)
+app.include_router(ingestion_router, prefix=settings.api_prefix)
 
 
 @app.get("/health")

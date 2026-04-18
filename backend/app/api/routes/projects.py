@@ -185,6 +185,8 @@ def build_participant_summaries(project: Project) -> list[ParticipantSummary]:
             cast_role=participant.cast_role,
             city=participant.city,
             occupation=participant.occupation,
+            background_summary=participant.background_summary,
+            personality_summary=participant.personality_summary,
             attachment_style=participant.attachment_style,
             display_order=participant.display_order,
             editable_personality=participant.editable_personality,

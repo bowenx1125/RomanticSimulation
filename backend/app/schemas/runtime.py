@@ -177,6 +177,54 @@ class SceneCompetitionOutcome(BaseModel):
     level_semantic: str = "level_02_relationship_promotion"
 
 
+class SceneConflictTestResult(BaseModel):
+    pair_index: int
+    participant_a_id: str
+    participant_a_name: str
+    participant_b_id: str
+    participant_b_name: str
+    conflict_topic: str
+    conflict_intensity: str = "medium"
+    outcome_type: str
+    survived: bool = True
+    summary: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_03_relationship_settlement"
+
+
+class SceneDecisionResult(BaseModel):
+    participant_id: str
+    participant_name: str
+    final_target_participant_id: str | None = None
+    final_target_name: str | None = None
+    wavering_targets: list[str] = Field(default_factory=list)
+    commitment_level: str = "undecided"
+    cost_assessment: str
+    decision_reason: str
+    key_events: list[str] = Field(default_factory=list)
+    relationship_deltas: list[SceneRelationshipDelta] = Field(default_factory=list)
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_03_relationship_settlement"
+
+
+class SceneFinalSettlementResult(BaseModel):
+    participant_id: str
+    participant_name: str
+    partner_participant_id: str | None = None
+    partner_name: str | None = None
+    final_status: str
+    romance_score: int = 0
+    key_turning_points: list[str] = Field(default_factory=list)
+    success_reasons: list[str] = Field(default_factory=list)
+    failure_reasons: list[str] = Field(default_factory=list)
+    relationship_story: str
+    level_requirement_met: bool = True
+    event_tags: list[str] = Field(default_factory=list)
+    level_semantic: str = "level_03_relationship_settlement"
+
+
 class SceneRefereeResult(BaseModel):
     scene_id: str
     scene_summary: str
@@ -189,6 +237,9 @@ class SceneRefereeResult(BaseModel):
     missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
     invitation_results: list[SceneInvitationResult] = Field(default_factory=list)
     competition_outcomes: list[SceneCompetitionOutcome] = Field(default_factory=list)
+    conflict_test_results: list[SceneConflictTestResult] = Field(default_factory=list)
+    decision_results: list[SceneDecisionResult] = Field(default_factory=list)
+    final_settlement_results: list[SceneFinalSettlementResult] = Field(default_factory=list)
     participant_memory_updates: list[dict] = Field(default_factory=list)
     next_tension: str
 
@@ -329,6 +380,9 @@ class SceneReplayResponse(BaseModel):
     missed_expectations: list[SceneExpectationMissResult] = Field(default_factory=list)
     invitation_results: list[SceneInvitationResult] = Field(default_factory=list)
     competition_outcomes: list[SceneCompetitionOutcome] = Field(default_factory=list)
+    conflict_test_results: list[SceneConflictTestResult] = Field(default_factory=list)
+    decision_results: list[SceneDecisionResult] = Field(default_factory=list)
+    final_settlement_results: list[SceneFinalSettlementResult] = Field(default_factory=list)
     group_state_after_scene: dict = Field(default_factory=dict)
     next_tension: str | None = None
     replay_url: str | None = None

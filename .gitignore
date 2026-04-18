@@ -1,5 +1,6 @@
 .DS_Store
 .env
+.env.local
 .venv
 __pycache__/
 *.pyc
@@ -10,3 +11,9 @@ frontend/node_modules/
 postgres_data/
 
 .gstack/
+
+# Keep AI-generated markdown fixtures uploadable, but never upload raw chat exports.
+wechat_data/.DS_Store
+wechat_data/*.xlsx
+wechat_data/*.xls
+wechat_data/*.csv

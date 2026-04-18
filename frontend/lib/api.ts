@@ -82,9 +82,23 @@ export type ProjectParticipant = {
   cast_role: string;
   city?: string;
   occupation?: string;
+  background_summary?: string;
+  personality_summary?: string;
   attachment_style?: string;
   display_order: number;
   editable_personality: ParticipantEditablePersonality;
+};
+
+export type WeChatFileSummary = {
+  file_path: string;
+  participant_name: string;
+};
+
+export type WeChatIngestResponse = {
+  status: string;
+  participant_id: string;
+  personality_summary: Record<string, unknown>;
+  steps: string[];
 };
 
 export type PersonalityPreset = {
@@ -344,6 +358,63 @@ export type SceneReplay = {
     event_tags: string[];
     level_semantic: string;
   }>;
+  conflict_test_results: Array<{
+    pair_index: number;
+    participant_a_id: string;
+    participant_a_name: string;
+    participant_b_id: string;
+    participant_b_name: string;
+    conflict_topic: string;
+    conflict_intensity: string;
+    outcome_type: string;
+    survived: boolean;
+    summary: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  decision_results: Array<{
+    participant_id: string;
+    participant_name: string;
+    final_target_participant_id?: string | null;
+    final_target_name?: string | null;
+    wavering_targets: string[];
+    commitment_level: string;
+    cost_assessment: string;
+    decision_reason: string;
+    key_events: string[];
+    relationship_deltas: Array<{
+      source_participant_id: string;
+      target_participant_id: string;
+      changes: Record<string, number>;
+      reason: string;
+      event_tags: string[];
+    }>;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
+  final_settlement_results: Array<{
+    participant_id: string;
+    participant_name: string;
+    partner_participant_id?: string | null;
+    partner_name?: string | null;
+    final_status: string;
+    romance_score: number;
+    key_turning_points: string[];
+    success_reasons: string[];
+    failure_reasons: string[];
+    relationship_story: string;
+    level_requirement_met: boolean;
+    event_tags: string[];
+    level_semantic: string;
+  }>;
   pair_date_results: Array<{
     pair_index: number;
     participant_ids: string[];
@@ -445,6 +516,20 @@ export async function importParticipants(projectId: string, payload: Participant
   return request(`/projects/${projectId}/participants/import`, {
     method: "POST",
     json: payload,
+  });
+}
+
+export async function listWeChatFiles() {
+  return request<{ files: WeChatFileSummary[] }>("/ingest/wechat/files");
+}
+
+export async function ingestWeChatParticipant(projectId: string, filePath: string) {
+  return request<WeChatIngestResponse>("/ingest/wechat", {
+    method: "POST",
+    json: {
+      project_id: projectId,
+      file_path: filePath,
+    },
   });
 }
 

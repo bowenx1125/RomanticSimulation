@@ -294,6 +294,13 @@ export default function ProjectParticipantsPage() {
                 )}
               </div>
 
+              {participant.personality_summary ? (
+                <p className="card-intro">{participant.personality_summary}</p>
+              ) : null}
+              {participant.background_summary ? (
+                <p className="card-footnote">{participant.background_summary}</p>
+              ) : null}
+
               <div className="slider-grid">
                 {[
                   ["extroversion", "外向度"],

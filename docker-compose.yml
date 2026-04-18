@@ -35,6 +35,8 @@ services:
       CORS_ORIGINS: '["http://localhost:3000"]'
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
       DIRECTOR_PROVIDER_MODE: ${DIRECTOR_PROVIDER_MODE:-auto}
+    volumes:
+      - ./wechat_data:/app/wechat_data:ro
     depends_on:
       postgres:
         condition: service_healthy

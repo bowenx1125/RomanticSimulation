@@ -142,6 +142,19 @@ simulation 与 runtime：
 - `GET /api/simulations/{simulation_id}/relationship-graph`
 - `GET /api/simulations/{simulation_id}/personalities`
 
+ingestion：
+
+- `POST /api/ingest/wechat`
+
+示例：
+
+```json
+{
+  "project_id": "your-project-id",
+  "file_path": "wechat_data/Apple.md"
+}
+```
+
 ## Runtime Flow
 
 Phase 3 的执行链路：

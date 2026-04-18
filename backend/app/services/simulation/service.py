@@ -125,6 +125,47 @@ def import_participants(
     return participants
 
 
+def create_project_participant(
+    db: Session,
+    project: Project,
+    payload: ParticipantImportPayload,
+) -> ParticipantProfile:
+    editable_personality = build_editable_personality(payload)
+    max_display_order = db.scalar(
+        select(ParticipantProfile.display_order)
+        .where(ParticipantProfile.project_id == project.id)
+        .order_by(ParticipantProfile.display_order.desc())
+        .limit(1)
+    )
+    participant = ParticipantProfile(
+        project_id=project.id,
+        name=payload.name,
+        cast_role=payload.cast_role,
+        age=payload.age,
+        city=payload.city,
+        occupation=payload.occupation,
+        background_summary=payload.background_summary,
+        personality_summary=payload.personality_summary,
+        attachment_style=editable_personality["attachment_style"],
+        appearance_tags=payload.appearance_tags,
+        personality_tags=payload.personality_tags,
+        preferred_traits=payload.preferred_traits,
+        disliked_traits=payload.disliked_traits,
+        commitment_goal=editable_personality["commitment_goal"],
+        imported_payload=payload.model_dump(),
+        editable_personality=editable_personality,
+        soul_data=build_soul_data(payload, editable_personality),
+        is_active=payload.is_active,
+        display_order=payload.display_order
+        if payload.display_order is not None
+        else (max_display_order + 1 if max_display_order is not None else 0),
+    )
+    db.add(participant)
+    db.commit()
+    db.refresh(participant)
+    return participant
+
+
 def deep_merge_dict(base: dict, override: dict) -> dict:
     merged = dict(base)
     for key, value in override.items():

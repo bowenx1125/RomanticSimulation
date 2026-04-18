@@ -47,6 +47,9 @@ from app.services.simulation.scene_registry import (
     SCENE_05_CODE,
     SCENE_06_CODE,
     SCENE_07_CODE,
+    SCENE_08_CODE,
+    SCENE_09_CODE,
+    SCENE_10_CODE,
 )
 from app.services.simulation.scenes.scene_03 import (
     build_scene_03_interest_target,
@@ -70,6 +73,18 @@ from app.services.simulation.scenes.scene_06 import (
 from app.services.simulation.scenes.scene_07 import (
     build_scene_07_invitation_seed,
     execute_scene_07_runtime,
+)
+from app.services.simulation.scenes.scene_08 import (
+    build_scene_08_conflict_seed,
+    execute_scene_08_runtime,
+)
+from app.services.simulation.scenes.scene_09 import (
+    build_scene_09_decision_seed,
+    execute_scene_09_runtime,
+)
+from app.services.simulation.scenes.scene_10 import (
+    build_scene_10_settlement_seed,
+    execute_scene_10_runtime,
 )
 from app.services.simulation.service import (
     build_relationship_surface_metrics,
@@ -140,6 +155,12 @@ def execute_scene_runtime(
         return execute_scene_06_runtime(simulation, scene_run, context, input_summary, plan)
     if scene_run.scene_code == SCENE_07_CODE:
         return execute_scene_07_runtime(simulation, scene_run, context, input_summary, plan)
+    if scene_run.scene_code == SCENE_08_CODE:
+        return execute_scene_08_runtime(simulation, scene_run, context, input_summary, plan)
+    if scene_run.scene_code == SCENE_09_CODE:
+        return execute_scene_09_runtime(simulation, scene_run, context, input_summary, plan)
+    if scene_run.scene_code == SCENE_10_CODE:
+        return execute_scene_10_runtime(simulation, scene_run, context, input_summary, plan)
 
     transcript: list[AgentTurnPayload] = []
     for turn_index in range(1, plan.max_turns + 1):
@@ -377,6 +398,27 @@ def build_scene_context(db: Session, simulation: SimulationRun, scene_code: str)
     for row in memory_rows:
         memory_lookup[row.participant_id].append(row)
 
+    previous_scene_artifact: dict = {}
+    if scene_code in {SCENE_09_CODE, SCENE_10_CODE}:
+        prev_scene_run = db.scalar(
+            select(SceneRun)
+            .where(
+                SceneRun.simulation_run_id == simulation.id,
+                SceneRun.status == "completed",
+            )
+            .order_by(SceneRun.scene_index.desc())
+            .limit(1)
+        )
+        if prev_scene_run is not None:
+            prev_artifact = db.scalar(
+                select(SceneArtifact).where(
+                    SceneArtifact.scene_run_id == prev_scene_run.id,
+                    SceneArtifact.artifact_type == "scene_replay_dto",
+                )
+            )
+            if prev_artifact is not None and prev_artifact.payload:
+                previous_scene_artifact = prev_artifact.payload
+
     return {
         "scene_id": scene_code,
         "simulation_id": simulation.id,
@@ -387,6 +429,7 @@ def build_scene_context(db: Session, simulation: SimulationRun, scene_code: str)
         "all_participants": participants,
         "relationship_map": relationship_map,
         "memory_lookup": memory_lookup,
+        "previous_scene_artifact": previous_scene_artifact,
     }
 
 
@@ -414,7 +457,7 @@ def select_scene_participants(
     participants: list[ParticipantProfile],
     relationship_map: dict[tuple[str, str], RelationshipState],
 ) -> list[ParticipantProfile]:
-    if scene_code in {SCENE_03_CODE, SCENE_04_CODE, SCENE_05_CODE, SCENE_06_CODE, SCENE_07_CODE}:
+    if scene_code in {SCENE_03_CODE, SCENE_04_CODE, SCENE_05_CODE, SCENE_06_CODE, SCENE_07_CODE, SCENE_08_CODE, SCENE_09_CODE, SCENE_10_CODE}:
         return participants
     if scene_code == SCENE_01_CODE or len(participants) <= 4:
         return participants[:5]
@@ -466,6 +509,12 @@ def build_input_summary(context: dict) -> dict:
         payload["signal_seed"] = build_scene_06_seed(context)
     if context["scene_id"] == SCENE_07_CODE:
         payload["invitation_seed"] = build_scene_07_invitation_seed(context)
+    if context["scene_id"] == SCENE_08_CODE:
+        payload["conflict_seed"] = build_scene_08_conflict_seed(context)
+    if context["scene_id"] == SCENE_09_CODE:
+        payload["decision_seed"] = build_scene_09_decision_seed(context)
+    if context["scene_id"] == SCENE_10_CODE:
+        payload["settlement_seed"] = build_scene_10_settlement_seed(context)
     return payload
 
 
@@ -519,6 +568,12 @@ def build_active_tension(context: dict) -> str:
         return "每位参与者都将发送私密信号，期待落空与误判会直接影响谁敢在下一场主动邀约。"
     if context["scene_id"] == SCENE_07_CODE:
         return "每个人都要把信号转成主动邀约，竞争与被拒会快速拉开心理和关系分层。"
+    if context["scene_id"] == SCENE_08_CODE:
+        return "关系最亲密的几对将面对价值观冲突压力测试，信任和舒适感可能在一轮对话中急剧崩塌或反而加固。"
+    if context["scene_id"] == SCENE_09_CODE:
+        return "冲突测试后的变量波动正在收敛，每个人必须在代价评估中做出最终取舍，摇摆者将被迫收敛。"
+    if context["scene_id"] == SCENE_10_CODE:
+        return "所有关系线进入最终告白与结算，互选配对将被确认，未配对者将收到完整的关系故事回溯。"
     return "表面舒服和真正被理解正在分化，有人会继续靠近，也有人会因为多人气氛开始误读彼此。"
 
 
@@ -535,6 +590,12 @@ def build_stop_condition(scene_id: str) -> str:
         return "每位参与者至少完成一条私密信号发送，并输出接收结果与期待落空结果。"
     if scene_id == SCENE_07_CODE:
         return "所有参与者完成主动邀约并解析竞争、拒绝、fallback 或退场结果。"
+    if scene_id == SCENE_08_CODE:
+        return "所有选定的关系对完成冲突话题交锋，每对输出存活或崩塌结果及关系变量波动。"
+    if scene_id == SCENE_09_CODE:
+        return "每位参与者完成代价评估并锁定最终选择对象，输出承诺等级和摇摆分析。"
+    if scene_id == SCENE_10_CODE:
+        return "所有参与者完成最终告白或退出声明，输出配对结果、恋爱评分和完整关系故事。"
     return "至少完成 2 轮以上多人对话，并形成下一场可能的靠近、误会或竞争张力。"
 
 
@@ -576,6 +637,29 @@ def build_participant_directive(participant: ParticipantProfile, scene_id: str) 
         if personality.get("self_esteem_stability", 50) <= 45:
             return "若首邀受挫，谨慎评估 fallback 或退场，避免失控对位。"
         return "把私密信号转成可执行邀约，并在被拒后保持策略弹性。"
+    if scene_id == SCENE_08_CODE:
+        conflict_style = personality.get("conflict_style", "avoid_then_explode")
+        if conflict_style == "steady_boundary":
+            return "在冲突中保持边界清晰，用稳定的态度表达分歧，避免情绪失控。"
+        if conflict_style == "press_then_clarify":
+            return "先直面核心分歧，再尝试修复性沟通，不回避但控制烈度。"
+        if personality.get("self_esteem_stability", 50) <= 40:
+            return "冲突中优先保护自我，避免在高压下做出不可逆的关系判断。"
+        return "面对价值观分歧时保持诚实表达，同时评估对方的修复意愿。"
+    if scene_id == SCENE_09_CODE:
+        if personality.get("initiative", 50) >= 65:
+            return "快速评估代价并果断锁定目标，避免在犹豫中错失互选窗口。"
+        if personality.get("self_esteem_stability", 50) <= 45:
+            return "谨慎评估冲突后的信任损耗，如果代价过高则考虑退出而非勉强选择。"
+        if personality.get("attachment_style", "secure") == "anxious":
+            return "注意不要因焦虑而在多个目标间反复摇摆，尽量收敛到一个方向。"
+        return "基于冲突后的真实关系状态做出理性选择，平衡好感与代价。"
+    if scene_id == SCENE_10_CODE:
+        if personality.get("emotional_openness", 50) >= 60:
+            return "在最终告白中真诚表达感受，无论结果如何都完成关系的完整表达。"
+        if personality.get("initiative", 50) >= 65:
+            return "主动完成告白或明确表态，为整段关系画上清晰的句号。"
+        return "在最终结算中诚实面对关系走向，接受结果并完成个人成长回顾。"
     if personality.get("emotional_openness", 50) >= 60:
         return "把话题推进到更具体的关系看法，同时留意谁真的在认真回应。"
     return "先接住他人的深一点话题，再决定是否暴露更多真实偏好。"
@@ -1122,6 +1206,12 @@ def build_next_tension(
         return "scene_07_new_date 将把私密信号里的互相确认与期待落空转成主动邀约竞争，谁敢出手、谁会退缩将快速分化。"
     if context["scene_id"] == SCENE_07_CODE:
         return "scene_08_conflict_test 会检验邀约竞争后留下的关系线是否能扛住价值观冲突。"
+    if context["scene_id"] == SCENE_08_CODE:
+        return "scene_09_decision_night 将基于冲突后的变量波动做出最终关系取舍，崩塌的关系线需要被重新评估。"
+    if context["scene_id"] == SCENE_09_CODE:
+        return "scene_10_final_confession 将根据选择夜的结果完成最终告白与关系结算。"
+    if context["scene_id"] == SCENE_10_CODE:
+        return "模拟结束，所有关系线已完成最终结算。"
     if not relationship_deltas:
         return "下一场张力仍然来自多人场里的误判与靠近。"
     hottest = max(

@@ -15,6 +15,7 @@ from app.schemas.runtime import (
 )
 from app.services.simulation.scene_config import SCENE_CONFIG
 from app.services.simulation.scene_registry import SCENE_05_CODE
+from app.services.simulation.scenes.synthetic_rounds import build_scene_05_synthetic_rounds
 from app.services.simulation.service import clamp
 
 
@@ -70,6 +71,7 @@ def execute_scene_05_runtime(
         "missed_expectations": [item.model_dump() for item in referee_result.missed_expectations],
         "invitation_results": [item.model_dump() for item in referee_result.invitation_results],
         "competition_outcomes": [item.model_dump() for item in referee_result.competition_outcomes],
+        "rounds": build_scene_05_synthetic_rounds(plan, selection_results),
         "group_state_after_scene": {
             "dominant_topics": ["choice", "reciprocity", "mismatch"],
             "attention_distribution": [],
